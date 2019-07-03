@@ -1,4 +1,4 @@
-# fnc_dbscan.sqf
+# ark_fnc_dbscan.sqf
 
 This sqf function performs [Density-based spatial clustering of applications with noise](https://en.wikipedia.org/wiki/DBSCAN) (DBSCAN). 
 
