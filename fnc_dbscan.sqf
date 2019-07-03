@@ -1,5 +1,6 @@
 
 // [units, eps, minPts, markers] call fnc_dbscan;
+// returns a list of units, their positions and their label
 fnc_dbscan = {
     params["_targets", "_eps", "_minPts", "_markers"];
     private _units = [];
@@ -34,10 +35,8 @@ fnc_dbscan = {
             };
         };
     } forEach _units;
-    // DEBUG
-    if(_markers) then {
-        [_units] call fnc_markers;
-    };
+
+    _units
 };
 
 fnc_range_query = {
@@ -47,30 +46,4 @@ fnc_range_query = {
         if(_p distance (_x # 1) < _eps) then { _neighbours pushBack _x };
     } forEach _units;
     _neighbours
-};
-
-fnc_markers = {
-    params["_units"];
-    {
-        private _name = format["%1_marker", name (_x # 0)];
-        deleteMarker _name;
-        [_x] call fnc_add_marker;
-    } forEach _units;
-};
-
-fnc_add_marker = {
-    params["_unit"];
-    private _colors = ["ColorRed", "ColorBlue", "ColorGreen","ColorYellow","ColorWhite","ColorPink","ColorKhaki", "ColorOrange", "ColorBrown","ColorYellow"];
-    private _name = format["%1_marker", name (_unit # 0)];
-    // Create marker
-    createMarker [_name, _unit # 1];
-    if (_unit # 2 isEqualTo -1) then {
-        _name setMarkerColor "ColorBlack";
-        _name setMarkerText "";
-        _name setMarkerType "mil_triangle";
-    } else {
-        _name setMarkerColor (_colors # ((_unit # 2) mod (count _colors)));
-        _name setMarkerText format["%1", _unit # 2];
-        _name setMarkerType "mil_dot";
-    };
 };
