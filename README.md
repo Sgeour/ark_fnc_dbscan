@@ -4,7 +4,7 @@ This sqf function performs [Density-based spatial clustering of applications wit
 
 ## Usage
 
-To use this function call `private _result = [units, eps, minPts, markers] call fnc_dbscan;`
+To use this function call `private _result = [units, eps, minPts, markers] call ark_fnc_dbscan;`
 
 | Argument | Type |Description |
 |-|-|-|

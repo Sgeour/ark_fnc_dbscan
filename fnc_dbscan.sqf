@@ -1,7 +1,7 @@
 
-// [units, eps, minPts, markers] call fnc_dbscan;
+// [units, eps, minPts, markers] call ark_fnc_dbscan;
 // returns a list of units, their positions and their label
-fnc_dbscan = {
+ark_fnc_dbscan = {
     params["_targets", "_eps", "_minPts", "_markers"];
     private _units = [];
     {
@@ -11,7 +11,7 @@ fnc_dbscan = {
     {
         if (!isNil {_x # 2}) then {
         } else {
-            private _neighbours = [_units, _x # 1, _eps] call fnc_range_query;
+            private _neighbours = [_units, _x # 1, _eps] call ark_fnc_range_query;
             if ((count _neighbours) < _minPts) then {
                 _x set[2, -1];
             } else {
@@ -26,7 +26,7 @@ fnc_dbscan = {
                     if (!isNil {_x # 2}) then {
                     } else {
                         _x set[2, _c];
-                        private _n = [_units, _x # 1, _eps] call fnc_range_query;
+                        private _n = [_units, _x # 1, _eps] call ark_fnc_range_query;
                         if(count _n >= _minPts) then {
                             _seed = _seed arrayIntersect _n;
                         };
@@ -39,7 +39,7 @@ fnc_dbscan = {
     _units
 };
 
-fnc_range_query = {
+ark_fnc_range_query = {
     params["_units", "_p", "_eps"];
     private _neighbours = [];
     {
