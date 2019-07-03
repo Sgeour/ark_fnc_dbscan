@@ -1,8 +1,8 @@
 
-// [units, eps, minPts, markers] call ark_fnc_dbscan;
+// [units, eps, minPts] call ark_fnc_dbscan;
 // returns a list of units, their positions and their label
 ark_fnc_dbscan = {
-    params["_targets", "_eps", "_minPts", "_markers"];
+    params["_targets", "_eps", "_minPts"];
     private _units = [];
     {
         _units pushBack ([_x, getPosATL _x, nil]);
