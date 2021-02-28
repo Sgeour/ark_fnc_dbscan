@@ -1,49 +1,64 @@
-
-// [units, eps, minPts] call ark_fnc_dbscan;
-// returns a list of units, their positions and their label
-ark_fnc_dbscan = {
-    params["_targets", "_eps", "_minPts"];
-    private _units = [];
-    {
-        _units pushBack ([_x, getPosATL _x, nil]);
-    } forEach _targets;
-    private _c = 0;
-    {
-        if (!isNil {_x # 2}) then {
-        } else {
-            private _neighbours = [_units, _x # 1, _eps] call ark_fnc_range_query;
-            if ((count _neighbours) < _minPts) then {
-                _x set[2, -1];
-            } else {
-                _c = _c + 1;
-                _x set[2, _c];
-
-                private _seed = _neighbours;
-                {
-                    if (_x # 2 isEqualTo -1) then {
-                        _x set [2, _c];
-                    };
-                    if (!isNil {_x # 2}) then {
-                    } else {
-                        _x set[2, _c];
-                        private _n = [_units, _x # 1, _eps] call ark_fnc_range_query;
-                        if(count _n >= _minPts) then {
-                            _seed = _seed arrayIntersect _n;
-                        };
-                    };
+/**
+ * [_targets, _radius, _minPts] call ark_fnc_dbscan;
+ * 
+ * Labels units with a cluster label and returns a HashMap of clusters.
+ * Units in cluster -1 are outliers.
+ *
+ * Returns:
+ *    Cluster: [units]
+ */
+ark_fnc_dbscan = { 
+    params ["_targets", "_radius", "_minPts"]; 
+    private _c = 0; 
+    private _hashMap = createHashMap; 
+    _hashMap set [-1, []];
+    // reset 
+    { 
+        _x setVariable ["cluster", nil]; 
+    } forEach _targets; 
+ 
+    { 
+        if (isNil {_x getVariable "cluster"}) then { 
+            private _neighbours = [_targets, getPosATL _x, _radius] call ark_fnc_rangeQuery; 
+            if ((count _neighbours) < _minPts) then { 
+                _x setVariable ["cluster", -1]; 
+                (_hashMap get -1) pushBack _x;
+                // Altered implementation, we don't care for outliers 
+            } else { 
+                _c = _c + 1; 
+                _hashMap set [_c, []]; 
+                _x setVariable ["cluster", _c]; 
+                (_hashMap get _c) pushBack _x; 
+                private _seed = _neighbours; 
+                { 
+                    // If player has no cluster 
+                    if (isNil {_x getVariable "cluster"}) then { 
+                        _x setVariable ["cluster", _c]; 
+                        (_hashMap get _c) pushBack _x; 
+                        private _n = [_targets, getPosATL _x, _radius] call ark_fnc_rangeQuery; 
+                        if (count _n >= _minPts) then { 
+                            _seed = _seed arrayIntersect _n; 
+                        }; 
+                    } else { 
+                        // Outliers join cluster 
+                        if((_x getVariable "cluster") isEqualTo -1) then { 
+                            _x setVariable ["cluster", _c];
+                            _hashMap set [-1, (_hashMap get -1) - [_x]];
+                            (_hashMap get _c) pushBack _x; 
+                        }; 
+                    }; 
                 } forEach _seed;
-            };
-        };
-    } forEach _units;
+            }; 
+        }; 
+    } forEach _targets; 
+    _hashMap 
+}; 
 
-    _units
-};
-
-ark_fnc_range_query = {
-    params["_units", "_p", "_eps"];
+ark_fnc_rangeQuery = {
+    params["_units", "_p", "_radius"];
     private _neighbours = [];
     {
-        if(_p distance (_x # 1) < _eps) then { _neighbours pushBack _x };
+        if (_p distance (getPosATL _x) < _radius) then { _neighbours pushBack _x };
     } forEach _units;
     _neighbours
 };
