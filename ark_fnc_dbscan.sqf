@@ -1,12 +1,6 @@
-/**
- * [_targets, _radius, _minPts] call ark_fnc_dbscan;
- * 
- * Labels units with a cluster label and returns a HashMap of clusters.
- * Units in cluster -1 are outliers.
- *
- * Returns:
- *    Cluster: [units]
- */
+// [_targets, _radius, _minPts] call ark_fnc_dbscan;
+// Labels units with a cluster label and returns a HashMap of clusters. Units in cluster -1 are outliers.
+// Returns: Cluster: [units]
 ark_fnc_dbscan = { 
     params ["_targets", "_radius", "_minPts"]; 
     private _c = 0; 
